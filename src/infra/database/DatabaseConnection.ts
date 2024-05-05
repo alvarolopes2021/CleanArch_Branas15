@@ -9,7 +9,7 @@ export class PgPromiseAdapter implements DatabaseConnection {
     connection: any;
 
     constructor() {
-        this.connection = pgp()("postgres://postgres:PauGAdm1lson.!@localhost:5432/postgres");	
+        this.connection = pgp()();	
     }
 
     query(statement: string, params: any): Promise<any> {
