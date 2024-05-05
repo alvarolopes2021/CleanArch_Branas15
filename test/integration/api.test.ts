@@ -56,9 +56,9 @@ test("Deve solicitar uma corrida", async function () {
     const outputRequestRide = responseRequestRide.data;
     expect(outputRequestRide.rideId).toBeDefined();
     const responseGetRide = await axios.get(`http://localhost:3000/rides/${outputRequestRide.rideId}`);
-    const outputGetRide = responseGetRide.data;
-    expect(outputRequestRide.status).toBe(200);
-    expect(outputRequestRide.passengetName).toBe("John Doe");
+    const outputGetRide = responseGetRide.data;    
+    expect(responseRequestRide.status).toBe(200);
+    expect(outputGetRide.passengerName).toBe("John Doe");
     expect(outputGetRide.passengerId).toBe(inputRequestRide.passengerId);
     expect(outputGetRide.rideId).toBe(outputRequestRide.rideId);
     expect(outputGetRide.fromLat).toBe(-27.584905257808835);

@@ -1,6 +1,6 @@
 //import AccountDAO, { AccountDAODatabase } from "./AccountDAO";
 
-import AccountRepository from "./AccountRepository";
+import AccountRepository from "../../infra/repository/AccountRepository";
 
 export default class GetAccount {
 	constructor(readonly accountRepository: AccountRepository) {

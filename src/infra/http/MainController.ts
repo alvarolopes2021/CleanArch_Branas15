@@ -1,8 +1,8 @@
 import HttpServer from "./HttpServer";
-import Signup from "./Signup";
-import GetAccount from "./GetAccount";
-import RequestRide from "./RequestRide";
-import GetRide from "./GetRide";
+import Signup from "../../application/usecase/Signup";
+import GetAccount from "../../application/usecase/GetAccount";
+import RequestRide from "../../application/usecase/RequestRide";
+import GetRide from "../../application/usecase/GetRide";
 
 export default class MainController {
 

@@ -1,6 +1,6 @@
-import MailerGatway from "./MailerGateway";
-import Account from './Account';
-import AccountRepository from "./AccountRepository";
+import MailerGatway from "../../infra/gateway/MailerGateway";
+import Account from '../../domain/Account';
+import AccountRepository from "../../infra/repository/AccountRepository";
 
 // use case
 export default class Signup {
