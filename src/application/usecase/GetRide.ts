@@ -14,12 +14,13 @@ export default class GetRide {
 
         return {
             passengerId: ride.passengerId,
+            driverId: ride.getDriverId(),
             rideId: ride.rideId,
             fromLat: ride.fromLat,
             fromLong: ride.fromLong,
             toLat: ride.toLat,
             toLong: ride.toLong,
-            status: ride.status,
+            status: ride.getStatus(),
             date: ride.date,
             passengerName: passenger.name
         };
@@ -28,6 +29,7 @@ export default class GetRide {
 
 type Output = {
     passengerId: string,
+    driverId?: string,
     rideId: string,
     fromLat: number,
     toLat: number,
