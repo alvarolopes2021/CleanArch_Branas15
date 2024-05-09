@@ -1,15 +1,10 @@
 *** TESTES ***
 
  - Com TDD, podemos começar com teste de interação - Branas
-
  - teste de unidade -> rápido, pouca alteração, teste 1 método ou 1 classe
-
  - teste de integração -> acessa coisas externas, mais lento que a unidade (um mock não torna o teste de unidade)
-
  - teste de integração -> muito pesado, testa todo o sistema desde o front até o banco, muita alteração (principalmente no front)
-
  100% de cobertura na unidade, não garante confiabiliade no sistema, a integração pode não funcionar 
-
 
  E2E  -> lento e caro
   |
@@ -22,8 +17,6 @@ INTEGRATION -> reúne o maior custo benefício (não é muito lento como o teste
 TESTE DEVE SER FIRST - Fast(rodar rápido) , Independent(isolados), Repeatable(sempre msm result), Self-validaitng(as respostas do teste que validam o teste, não um console log), Timily (antes do fonte)
 
 
-
-
 *** ARQUITETURA HEXAGONAL / PORTS AND ADAPTERS (a mesma coisa os 2) ***
 
 * DESIGN -> é um arranjo de responsabilidades - atribuição de responsabilidades - no código, é onde fica o que
@@ -31,8 +24,6 @@ TESTE DEVE SER FIRST - Fast(rodar rápido) , Independent(isolados), Repeatable(s
 * ARQUITETURA -> escolha de linguagem, tipo de banco de dados (tem a ver com o resultado q vc quer ter), a equipe, o deploy, são decisões
 
 DAO - Data Access Object
-
-
 
 
 *** TEST PATTERNS ***
@@ -44,11 +35,9 @@ DAO - Data Access Object
  * Fake -> simula um comportamento real, seria usar o DAOMemory
 
 
-
 *** SOLID ***
 
  * Single Responsability Principle (S) -> 
-
 
 
 *** CLEAN ARCHITECTURE ***
@@ -60,7 +49,6 @@ DAO - Data Access Object
  o q são regras ? - cpf válido? o nome é válido ? o email é válido? qnt é a tarifa de uma corrida ?
 
    * domínio anêmico -> transaction script ou domain model
-
     - transaction script -> um service chama o outro passando dados -> gera dependência circular
     - domain model -> 
 
@@ -99,3 +87,10 @@ DAO - Data Access Object
 
   - Repositories -> 
 
+*** Domain Service ***
+
+ - realiza tarefas específicas do domínio (n cabe na entity nem no VO)
+
+ - Exmplos: token generator, distance calculator 
+
+ -
