@@ -1,5 +1,5 @@
 import DatabaseConnection from "../database/DatabaseConnection";
-import Ride from "../../domain/Ride";
+import Ride from "../../domain/entity/Ride";
 
 // PORT
 export default interface RideRepository {
@@ -19,7 +19,7 @@ export class RideRepositoryDatabase implements RideRepository {
     async save(ride: Ride) {
         //const connection = await connectDb();
 
-        await this.connection.query("insert into cccat15.ride (ride_id, passenger_id, from_lat, from_long, to_lat, to_long, status, date) values ($1, $2, $3, $4, $5, $6, $7, $8)", [ride.rideId, ride.passengerId, ride.fromLat, ride.fromLong, ride.toLat, ride.toLong, ride.getStatus(), ride.date]);
+        await this.connection.query("insert into cccat15.ride (ride_id, passenger_id, from_lat, from_long, to_lat, to_long, status, date) values ($1, $2, $3, $4, $5, $6, $7, $8)", [ride.rideId, ride.passengerId, ride.getFromLat(), ride.getFromLong(), ride.getToLat(), ride.getToLong(), ride.getStatus(), ride.date]);
 
     }
 

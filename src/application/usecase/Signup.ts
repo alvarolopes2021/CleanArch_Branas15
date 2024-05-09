@@ -1,5 +1,5 @@
+import Account from "../../domain/entity/Account";
 import MailerGatway from "../../infra/gateway/MailerGateway";
-import Account from '../../domain/Account';
 import AccountRepository from "../../infra/repository/AccountRepository";
 
 // use case
@@ -17,7 +17,7 @@ export default class Signup {
 
 		await this.accountRepository.save(account);
 
-		await this.mailerGateway.send("Welcome", input.email, "Use this link to confirm your account");
+		await this.mailerGateway.send("Welcome", account.getEmail(), "Use this link to confirm your account");
 
 		return {
 			accountId: account.accountId
