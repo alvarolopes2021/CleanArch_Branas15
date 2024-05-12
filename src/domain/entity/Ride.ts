@@ -1,10 +1,13 @@
 import crypto from 'crypto';
 import Coord from '../vo/Coord';
+import DistanceCalculator from '../ds/DistanceCalculator';
 
 // é entidade pois muda com passar do tempo, o accpet() muda o estado
 export default class Ride {
     private from: Coord;
     private to: Coord;
+    private lastPosition: Coord;
+
     constructor(
         readonly rideId: string,
         readonly passengerId: string,
@@ -14,10 +17,14 @@ export default class Ride {
         toLong: number,
         private status: string,
         readonly date: Date,
+        lastLat: number,
+        lastLong: number,
+        private distance: number,
         private driverId?: string) {
 
         this.from = new Coord(fromLat, fromLong);
         this.to = new Coord(toLat, toLong);
+        this.lastPosition = new Coord(lastLat, lastLong)
 
         if (fromLat < -90 && fromLat > 90) throw new Error("wrong lat")
 
@@ -27,12 +34,12 @@ export default class Ride {
         const rideId = crypto.randomUUID();
         const status = "requested";
         const date = new Date();
-        return new Ride(rideId, passengerId, fromLat, fromLong, toLat, toLong, status, date);
+        return new Ride(rideId, passengerId, fromLat, fromLong, toLat, toLong, status, date, fromLat, fromLong, 0);
     }
 
-    static restore(rideId: string, passengerId: string, fromLat: number, fromLong: number, toLat: number, toLong: number, status: string, date: Date, driveId?: string) {
+    static restore(rideId: string, passengerId: string, fromLat: number, fromLong: number, toLat: number, toLong: number, status: string, date: Date, lastLat: number, lastLong: number, distance: number, driverId?: string) {
 
-        return new Ride(rideId, passengerId, fromLat, fromLong, toLat, toLong, status, date);
+        return new Ride(rideId, passengerId, fromLat, fromLong, toLat, toLong, status, date, lastLat, lastLong, distance);
     }
 
     accept(driveId: string) {
@@ -45,6 +52,14 @@ export default class Ride {
     start(rideId: string) {
         if (this.status !== "accepted") throw new Error("Invalid status")
         this.status = "in_progress"
+    }
+
+    updatePosition(lat: number, long: number) {
+        if (this.status !== "in_progress") throw new Error("Could not update position")
+
+        const newLastPosition = new Coord(lat, long);
+        this.distance += DistanceCalculator.calculate(this.lastPosition, newLastPosition);
+        this.lastPosition = newLastPosition;
     }
 
     getStatus() {
@@ -68,5 +83,17 @@ export default class Ride {
 
     getToLong() {
         return this.to.getLong();
+    }
+
+    getDistance() {
+        return this.distance;
+    }
+
+    getLastLat() {
+        return this.lastPosition.getLat();
+    }
+
+    getLastLong() {
+        return this.lastPosition.getLong();
     }
 }
