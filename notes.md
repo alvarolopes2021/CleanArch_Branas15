@@ -93,4 +93,46 @@ DAO - Data Access Object
 
  - Exmplos: token generator, distance calculator 
 
- -
+*** Aggregates ***
+- grupo de objetos de domínio q andam juntos
+
+- Agrupamento de entities + value objects
+
+  * boas praticas
+    - crie aggregates pequenos
+
+  - account -> é aggregate e atua como raiz do Aggregate (name, email, cpf e carplate)
+  - ride -> aggregate (Ride<AR>, Coord,Coord,Coord)
+  - Position -> aggregate (Position<AR>, Coord)
+
+  a entity tende a ser Raiz de Agragado - AR - Aggregate Root
+
+  - EXEMPLO
+
+    - TRELLO - board tem column que tem card 
+      crio um aggregate de board
+      um de column
+      um de card
+
+      pois se o board for o aggregate master, iria ficar muito volumoso
+
+      para juntar, faço por identidade (ID)
+      
+      
+*** Repositories ***
+  além de separar Domínio de INfra, ele persiste os aggregates
+  extensão da preservação de estado
+  ele vai até o banco preservando e volta preservando
+
+  por isso eu tenho um UpdateRide(). O repository ele pega esse estado do update e leva até o banco
+
+*** Repository vs DAO ***
+
+  o repository trabalha com aggregate, DAO não
+
+  faz a mediação entre domínio e camada de dados - não é persistência somente, é decorrente ao domain
+
+  um repository por aggregate
+
+  
+  

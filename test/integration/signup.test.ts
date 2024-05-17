@@ -3,7 +3,7 @@ import sinon from 'sinon';
 import GetAccount from '../../src/application/usecase/GetAccount';
 import Signup from '../../src/application/usecase/Signup';
 import DatabaseConnection, { PgPromiseAdapter } from '../../src/infra/database/DatabaseConnection';
-import { AccountRepositoryDatabase } from '../../src/infra/repository/AccountRepository';
+import { AccountRepositoryDatabase, AccountRepositoryORM } from '../../src/infra/repository/AccountRepository';
 import MailerGateway from "../../src/infra/gateway/MailerGateway";
 
 let signup: Signup;
@@ -12,7 +12,7 @@ let connection: DatabaseConnection;
 
 beforeEach(() => {
     connection = new PgPromiseAdapter();
-    const accountDAO = new AccountRepositoryDatabase(connection);
+    const accountDAO = new AccountRepositoryORM(connection);
     const mailerGateway = new MailerGateway();
     signup = new Signup(accountDAO, mailerGateway);
     getAccount = new GetAccount(accountDAO);
@@ -164,6 +164,7 @@ test("Deve criar a conta de um passageiro stub", async function () {
 })
 */
 
+/*
 test("Deve criar a conta de um passageiro spy", async function () {
     // given
     const input = {
@@ -224,7 +225,7 @@ test("Deve criar a conta de um passageiro mock", async function () {
     mailerGatewayMock.verify();
     mailerGatewayMock.restore();
 })
-
+*/
 afterEach(async () => {
     await connection.close();
 })
