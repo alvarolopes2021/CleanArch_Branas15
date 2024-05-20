@@ -134,5 +134,8 @@ DAO - Data Access Object
 
   um repository por aggregate
 
-  
+*** DI vs DIP
+
+  - Dependecy Injection - Implementação - (constructor, setter, registry, annotation)
+  - Dependency Inversion - Desing (high level mmodelues should not depende on low level modules)
   

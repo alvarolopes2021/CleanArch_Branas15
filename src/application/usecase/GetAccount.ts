@@ -8,11 +8,19 @@ export default class GetAccount {
 	}
 
 	async execute(accountId: string) {
-		const acc = await this.accountRepository.getById(accountId);
+		const account = await this.accountRepository.getById(accountId);
 
-		if (!acc) throw new Error("Account doesn exist");
-		
-		return acc;
+		if (!account) throw new Error("Account doesn exist");
+
+		return {
+			accountId: account.getName(),
+			name: account.getName(),
+			email: account.getEmail(),
+			cpf: account.getCpf(),
+			carPlate: account.getCarPlate(),
+			isPassenger: account.isPassenger,
+			isDriver: account.isDriver
+		};
 
 	}
 }

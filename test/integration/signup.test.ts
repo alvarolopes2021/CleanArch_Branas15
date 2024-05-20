@@ -12,7 +12,7 @@ let connection: DatabaseConnection;
 
 beforeEach(() => {
     connection = new PgPromiseAdapter();
-    const accountDAO = new AccountRepositoryORM(connection);
+    const accountDAO = new AccountRepositoryDatabase(connection);
     const mailerGateway = new MailerGateway();
     signup = new Signup(accountDAO, mailerGateway);
     getAccount = new GetAccount(accountDAO);
@@ -34,9 +34,9 @@ test("Deve criar a conta de um passageiro", async function () {
 
     const outputGetAccount = await getAccount.execute(output.accountId);
 
-    expect(outputGetAccount.getName()).toBe(input.name);
-    expect(outputGetAccount.getEmail()).toBe(input.email);
-    expect(outputGetAccount.getCpf()).toBe(input.cpf);
+    expect(outputGetAccount.name).toBe(input.name);
+    expect(outputGetAccount.email).toBe(input.email);
+    expect(outputGetAccount.cpf).toBe(input.cpf);
     //expect(outputGetAccount.is_passenger).toBe(input.isPassenger); isto está acoplado com o banco no is_passenger
 })
 
@@ -128,9 +128,9 @@ test("Deve criar a conta de um motorista", async function () {
 
     const outputGetAccount = await getAccount.execute(output.accountId);
 
-    expect(outputGetAccount.getName()).toBe(input.name);
-    expect(outputGetAccount.getEmail()).toBe(input.email);
-    expect(outputGetAccount.getCpf()).toBe(input.cpf);
+    expect(outputGetAccount.name).toBe(input.name);
+    expect(outputGetAccount.email).toBe(input.email);
+    expect(outputGetAccount.cpf).toBe(input.cpf);
     expect(outputGetAccount.isDriver).toBe(input.isDriver);
 });
 

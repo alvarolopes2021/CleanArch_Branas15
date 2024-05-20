@@ -8,7 +8,7 @@ import { Model, column, model } from "./ORM";
 // aqui, eu tenho coisas que batem com o banco, com primitivos (normalização - serve para otimização de busca, evitar duplicidade)
 @model("cccat15", "account")
 export default class AccountModel extends Model {
-    @column("account_id", false)
+    @column("account_id", true)
     accountId: string;
     @column("name")
     name: string;
@@ -34,7 +34,11 @@ export default class AccountModel extends Model {
         this.isDriver = isDriver;
     }
 
-    static fromAggregate (account: Account) {
+    static fromAggregate(account: Account) {
         return new AccountModel(account.accountId, account.getName(), account.getEmail(), account.getCpf(), account.getCarPlate() || "", account.isPassenger, account.isDriver)
+    }
+
+    getAggregate() {
+        return Account.restore(this.account_id, this.name, this.email, this.cpf, this.isPassenger, this.isDriver, this.carPlate);
     }
 }

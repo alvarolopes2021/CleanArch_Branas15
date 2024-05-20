@@ -28,7 +28,7 @@ export class RideRepositoryDatabase implements RideRepository {
 
         if (!ride) return;
 
-        return Ride.restore(ride.ride_id, ride.passenger_id, parseFloat(ride.from_lat), parseFloat(ride.from_long), parseFloat(ride.to_Lat), parseFloat(ride.to_long), ride.status, ride.date, parseFloat(ride.last_lat), parseFloat(ride.last_long), parseFloat(ride.distance), ride.driver_id);
+        return Ride.restore(ride.ride_id, ride.passenger_id, parseFloat(ride.from_lat), parseFloat(ride.from_long), parseFloat(ride.to_lat), parseFloat(ride.to_long), ride.status, ride.date, parseFloat(ride.last_lat), parseFloat(ride.last_long), parseFloat(ride.distance), ride.driver_id);
     }
 
     async getActiveRidesByPassengerId(passengerId: string): Promise<any> {

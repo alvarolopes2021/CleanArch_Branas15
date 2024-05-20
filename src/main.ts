@@ -8,6 +8,7 @@ import { RideRepositoryDatabase } from "./infra/repository/RideRepository";
 import { PgPromiseAdapter } from "./infra/database/DatabaseConnection";
 import { ExpressAdapter } from "./infra/http/HttpServer";
 import MainController from "./infra/http/MainController";
+import Registry from "./infra/di/Registry";
 
 const httpServer = new ExpressAdapter();
 const connection = new PgPromiseAdapter();
@@ -20,7 +21,12 @@ const signup = new Signup(accountRepository, mailerGateway);
 const getAccount = new GetAccount(accountRepository);
 const requestRide = new RequestRide(rideRepository, accountRepository);
 const getRide = new GetRide(rideRepository, accountRepository);
+const registry = Registry.getInstance();
+registry.register("signup", signup);
+registry.register("getAccount", getAccount);
+registry.register("requestRide", requestRide);
+registry.register("getRide", getRide);
 
-new MainController(httpServer, signup, getAccount, requestRide, getRide);
+new MainController(httpServer);
 
 httpServer.listen(3000);

@@ -8,65 +8,55 @@ import { AccountRepositoryDatabase } from "../../src/infra/repository/AccountRep
 import { RideRepositoryDatabase } from "../../src/infra/repository/RideRepository";
 
 let connection: DatabaseConnection;
-let signup: Signup;
 let requestRide: RequestRide;
 let getRide: GetRide;
 let acceptRide: AcceptRide;
+let signup: Signup;
 
-beforeEach(() => {
-    connection = new PgPromiseAdapter();
-    const rideRepository = new RideRepositoryDatabase(connection);
+beforeEach(async () => {
+	connection = new PgPromiseAdapter();
+	const rideRepository = new RideRepositoryDatabase(connection);	    
     const accountRepository = new AccountRepositoryDatabase(connection);
-    requestRide = new RequestRide(rideRepository, accountRepository);
     signup = new Signup(accountRepository, new MailerGatway());
-    getRide = new GetRide(rideRepository, accountRepository);
-    acceptRide = new AcceptRide(rideRepository, accountRepository);
+	requestRide = new RequestRide(rideRepository, accountRepository);
+	getRide = new GetRide(rideRepository, accountRepository);
+	acceptRide = new AcceptRide(rideRepository, accountRepository);
 })
 
 test("Deve aceitar uma corrida", async function () {
-    // given
-    const inputSignupPassenger = {
-        name: "John Doe",
-        email: `john.doe${Math.random()}@gmail.com`,
-        cpf: "97456321558",
-        isPassenger: true
-    }
-    const outputSignupPassenger = await signup.execute(inputSignupPassenger);
-
-    //then
-    const inputRequestRide = {
-        passengerId: outputSignupPassenger.accountId,
-        fromLat: -27.584905257808835,
-        fromLong: -48.545022195325124,
-        toLat: -27.496887588317275,
-        toLong: -48.522234807851476
-    }
-    const outputRequestRide = await requestRide.execute(inputRequestRide);
-
-    
-    const inputSignupDriver = {
-        name: "John Doe",
-        email: `john.doe${Math.random()}@gmail.com`,
-        cpf: "97456321558",
-        carPlate: "AAA9999",
-        isDriver: true
-    }
-    const outputSignupDriver = await signup.execute(inputSignupDriver);
-    
-    
-    const inputAcceptRide = {
-        rideId: outputRequestRide.rideId,
-        driverId: outputSignupDriver.accountId
-    };
-    await acceptRide.execute(inputAcceptRide);
-
-
-    const outputGetRide = await getRide.execute(outputRequestRide.rideId);
-
-    expect(outputGetRide.driverId).toBe(inputAcceptRide.driverId);    
-    expect(outputGetRide.status).toBe("accepted");
-})
+	const inputSignupPassenger = {
+		name: "John Doe",
+		email: `john.doe${Math.random()}@gmail.com`,
+		cpf: "97456321558",
+		isPassenger: true
+	};
+	const outputSignupPassenger = await signup.execute(inputSignupPassenger);
+	const inputRequestRide = {
+		passengerId: outputSignupPassenger.accountId,
+		fromLat: -27.584905257808835,
+		fromLong: -48.545022195325124,
+		toLat: -27.496887588317275,
+		toLong: -48.522234807851476
+	};
+	const outputRequestRide = await requestRide.execute(inputRequestRide);
+	const inputSignupDriver = {
+		name: "John Doe",
+		email: `john.doe${Math.random()}@gmail.com`,
+		cpf: "97456321558",
+		carPlate: "AAA9999",
+		isDriver: true
+	};
+	const outputSignupDriver = await signup.execute(inputSignupDriver);
+	const inputAcceptRide = {
+		rideId: outputRequestRide.rideId,
+		driverId: outputSignupDriver.accountId
+	};
+	await acceptRide.execute(inputAcceptRide);
+	const outputGetRide = await getRide.execute(outputRequestRide.rideId);
+	expect(outputGetRide.driverId).toBe(inputAcceptRide.driverId);
+	expect(outputGetRide.status).toBe("accepted");
+});
 
 afterEach(async () => {
-    await connection.close();
+	await connection.close();
 })
