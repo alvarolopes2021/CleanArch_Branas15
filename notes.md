@@ -39,6 +39,8 @@ DAO - Data Access Object
 
  * Single Responsability Principle (S) -> 
 
+ - open closed - eu separo cada bloco de código, com base em um contrato e uso onde cada especifidade é precisa
+  
 
 *** CLEAN ARCHITECTURE ***
 
@@ -140,7 +142,7 @@ DAO - Data Access Object
 
 *** MICROSERVICES ***
   
-vantagem de microservices -> escalabildiade, organização de time, diversidade tecnológica (boa e ruim), melhor controle de débito técnico, código menor
+vantagem de microservices -> escalabildiade, organização de time, diversidade tecnológica (boa e ruim), melhor controle de débito técnico, código menor (consegue alterar mais fácil)
 
 contras -> segurança, complexidade mais alta, techs diferentes, transação distribuída,
 
@@ -149,3 +151,29 @@ escalabildiade -> é dada uma alta demanda, eu manter o tempo de resposta bom
  - escalabilidade vertical -> colocar mais dinheiro no problema
  - ............   horizontal -> colocar mais máquina
 
+ - transaction - ACID - tudo ou nada numa unidade lógica
+
+ **** padrões de microservice ****
+
+ - retry - retentativas
+ - fallback - usar mais de 1 serviço - redundância (2 gateways de pagamentos)
+ - saga - gerencia uma transação de longa duração 
+  - pivot transaction -> go/no go -> o cartão n passou, eu cancelo mando fazer dnv
+  - compensable transaction - 
+  - retriable -> posso retentar - cartão passou mas não a nota fiscal
+
+*** EVENT DRIVEN ***
+
+evento -> fato q aconteceu e que gera um gatilho (pedido relizado, pagamento aprovado, posição atualizada)
+
+observable -> específico de 1 objeto
+mediator -> serve a qualquer objeto
+
+*** CQRS - Command Query Resposability Segregation ***
+
+- usando API Composition -> chamo cada endpoint, pego os results, monto um DTO e mostro na tela
+  - tem problema de memória, latencia e etc
+
+- 
+
+ 

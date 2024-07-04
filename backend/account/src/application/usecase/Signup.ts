@@ -8,8 +8,7 @@ export default class Signup {
 	constructor(readonly accountRepository: AccountRepository, readonly mailerGateway: MailerGatway) {
 	}
 	async execute(input: any): Promise<any> {
-		console.log("singup", input);
-
+		
 		const existingAccount = await this.accountRepository.getByEmail(input.email);
 
 		if (existingAccount) throw new Error("Account already exists");

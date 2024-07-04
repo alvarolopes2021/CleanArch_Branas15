@@ -3,6 +3,7 @@ import AcceptRide from "../../src/application/usecase/AcceptRide";
 import FinishRide from "../../src/application/usecase/FinishRide";
 import GetPositions from "../../src/application/usecase/GetPositions";
 import GetRide from "../../src/application/usecase/GetRide";
+import ProcessPayment from "../../src/application/usecase/ProcessPayment";
 import RequestRide from "../../src/application/usecase/RequestRide";
 import StartRide from "../../src/application/usecase/StartRide";
 import UpdatePosition from "../../src/application/usecase/UpdatePosition";
@@ -10,6 +11,8 @@ import DatabaseConnection, { PgPromiseAdapter } from "../../src/infra/database/D
 import AccountGatewayHttp from "../../src/infra/gateway/AccountGatewayHttp";
 import MailerGatway from "../../src/infra/gateway/MailerGateway";
 import { AxiosAdapter, FetchAdapter } from "../../src/infra/http/HttpClient";
+import Mediator from "../../src/infra/mediator/Mediator";
+import { RabbitMQAdapter } from "../../src/infra/queue/Queue";
 import { PositionRepositoryDatabase } from "../../src/infra/repository/PositionRepository";
 import { RideRepositoryDatabase } from "../../src/infra/repository/RideRepository";
 import sinon from 'sinon';
@@ -23,11 +26,11 @@ let startRide: StartRide;
 let updatePosition: UpdatePosition;
 let getPositions: GetPositions;
 let finishRide: FinishRide;
-
-beforeEach(() => {
+let mediator: Mediator;
+beforeEach(async () => {
     connection = new PgPromiseAdapter();
     const rideRepository = new RideRepositoryDatabase(connection);
-    accountGateway = new AccountGatewayHttp(new FetchAdapter());
+    accountGateway = new AccountGatewayHttp(new AxiosAdapter());
     const positionRepository = new PositionRepositoryDatabase(connection);
 
     requestRide = new RequestRide(rideRepository, accountGateway);
@@ -36,7 +39,14 @@ beforeEach(() => {
     startRide = new StartRide(rideRepository);
     updatePosition = new UpdatePosition(rideRepository, positionRepository);
     getPositions = new GetPositions(positionRepository);
-    finishRide = new FinishRide(rideRepository);
+    const processPayment = new ProcessPayment(rideRepository);
+    mediator = new Mediator();
+    mediator.register('rideCompleted', async function (input: any) {
+        await processPayment.execute(input.rideId);
+    });
+    const queue = new RabbitMQAdapter();
+    await queue.connect();
+    finishRide = new FinishRide(rideRepository, mediator, queue);
 })
 
 test("Deve finalizar uma corrida em horário normal", async function () {

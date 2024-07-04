@@ -10,11 +10,11 @@ export default class AccountGatewayHttp implements AccountGateway {
     }
 
     async getById(accountId: string): Promise<any> {
-        return axios.get(`http://localhost:3001/accounts/${accountId}`);
+        return this.httpClient.get(`http://localhost:3001/accounts/${accountId}`);
     }
 
     async singup(input: any): Promise<any> {
-        return axios.post(`http://localhost:3001/signup`, input);
+        return this.httpClient.post(`http://localhost:3001/signup`, input);
     }
 
 }

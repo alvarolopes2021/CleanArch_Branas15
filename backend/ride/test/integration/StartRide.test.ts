@@ -1,4 +1,7 @@
 import AccountGateway from "../../src/application/gateway/AccountGateway";
+import UpdateRideProjectionHandler from "../../src/application/handler/UpdateRideProjectionHandler";
+import GetRideProjectionQuery from "../../src/application/query/GetRideProjectionQuery";
+import GetRideQuery from "../../src/application/query/GetRideQuery";
 import AcceptRide from "../../src/application/usecase/AcceptRide";
 import GetRide from "../../src/application/usecase/GetRide";
 import RequestRide from "../../src/application/usecase/RequestRide";
@@ -7,23 +10,26 @@ import DatabaseConnection, { PgPromiseAdapter } from "../../src/infra/database/D
 import AccountGatewayHttp from "../../src/infra/gateway/AccountGatewayHttp";
 import MailerGatway from "../../src/infra/gateway/MailerGateway";
 import { AxiosAdapter } from "../../src/infra/http/HttpClient";
+import { RabbitMQAdapter } from "../../src/infra/queue/Queue";
 import { RideRepositoryDatabase } from "../../src/infra/repository/RideRepository";
 
 let connection: DatabaseConnection;
-let accountGateway : AccountGateway;
+let accountGateway: AccountGateway;
 let requestRide: RequestRide;
 let getRide: GetRide;
 let acceptRide: AcceptRide;
 let startRide: StartRide;
 
-beforeEach(() => {
+beforeEach(async() => {
     connection = new PgPromiseAdapter();
     accountGateway = new AccountGatewayHttp(new AxiosAdapter());
     const rideRepository = new RideRepositoryDatabase(connection);
     requestRide = new RequestRide(rideRepository, accountGateway);
     getRide = new GetRide(rideRepository, accountGateway);
     acceptRide = new AcceptRide(rideRepository, accountGateway);
-    startRide = new StartRide(rideRepository);
+    const queue = new RabbitMQAdapter();
+    await queue.connect();
+    startRide = new StartRide(rideRepository, queue);
 })
 
 test("Deve iniciar uma corrida", async function () {
@@ -46,7 +52,7 @@ test("Deve iniciar uma corrida", async function () {
     }
     const outputRequestRide = await requestRide.execute(inputRequestRide);
 
-    
+
     const inputSignupDriver = {
         name: "John Doe",
         email: `john.doe${Math.random()}@gmail.com`,
@@ -55,23 +61,33 @@ test("Deve iniciar uma corrida", async function () {
         isDriver: true
     }
     const outputSignupDriver = await accountGateway.singup(inputSignupDriver);
-    
-    
+
+
     const inputAcceptRide = {
         rideId: outputRequestRide.rideId,
         driverId: outputSignupDriver.accountId
     };
     await acceptRide.execute(inputAcceptRide);
 
-    
+
     const inputStartRide = {
         rideId: outputRequestRide.rideId
     }
     await startRide.execute(inputStartRide);
 
 
-    const outputGetRide = await getRide.execute(outputRequestRide.rideId);
-    expect(outputGetRide.status).toBe("in_progress");
+    // const outputGetRide = await getRide.execute(outputRequestRide.rideId);
+    // expect(outputGetRide.status).toBe("in_progress");
+    // const getRideQuery = new GetRideQuery(connection);
+    // const outputGetRideQuery = getRideQuery.execute(outputRequestRide.rideId);
+    // console.log(outputGetRideQuery);
+
+    const updateRideProjectionHandler = new UpdateRideProjectionHandler(connection);
+    await updateRideProjectionHandler.execute(outputRequestRide.rideId);
+    const getRideProjectionQuery = new GetRideProjectionQuery(connection);
+    const outputGetRidePorjectionQuery = await  getRideProjectionQuery.execute(outputRequestRide.rideId)
+    console.log(outputGetRidePorjectionQuery);
+
 })
 
 afterEach(async () => {

@@ -1,6 +1,7 @@
 import RideRepository from "../../infra/repository/RideRepository";
 import AccountGateway from "../gateway/AccountGateway";
 
+// API Composition - pois faz buscas em outras API's
 export default class GetRide {
     constructor(readonly rideRepository: RideRepository, readonly accountGateway: AccountGateway) {
 
@@ -11,8 +12,13 @@ export default class GetRide {
         if (!ride) throw new Error("Ride not found")
         const passenger = await this.accountGateway.getById(ride.passengerId);
         if (!passenger) throw new Error("Passenger not found")
+        const driverId = ride.getDriverId();
+        let driver;
+        if (driverId) {
+            driver = await this.accountGateway.getById(driverId);
+        }
 
-        return {
+        const data: Output = {
             passengerId: ride.passengerId,
             driverId: ride.getDriverId(),
             rideId: ride.rideId,
@@ -28,6 +34,12 @@ export default class GetRide {
             date: ride.date,
             passengerName: passenger.name
         };
+
+        if (driver){
+            data.driverName = driver.name
+        }
+        
+        return data;
     }
 }
 
@@ -45,5 +57,6 @@ type Output = {
     distance: number,
     fare: number,
     date: Date,
-    passengerName: string
+    passengerName: string,
+    driverName?: string
 }

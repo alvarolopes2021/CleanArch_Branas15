@@ -8,20 +8,44 @@ import MainController from "./infra/http/MainController";
 import Registry from "./infra/di/Registry";
 import AccountGatewayHttp from "./infra/gateway/AccountGatewayHttp";
 import { AxiosAdapter } from "./infra/http/HttpClient";
+import ProcessPayment from "./application/usecase/ProcessPayment";
+import Mediator from "./infra/mediator/Mediator";
+import FinishRide from "./application/usecase/FinishRide";
+import { RabbitMQAdapter } from "./infra/queue/Queue";
+import QueueController from "./infra/queue/QueueController";
+import UpdateRideProjectionHandler from "./application/handler/UpdateRideProjectionHandler";
 
-const httpServer = new ExpressAdapter();
-const connection = new PgPromiseAdapter();
+async function main() {
 
-const rideRepository = new RideRepositoryDatabase(connection);
-const mailerGateway = new MailerGatway();
-const accountGateway = new AccountGatewayHttp(new AxiosAdapter());
+    const httpServer = new ExpressAdapter();
+    const connection = new PgPromiseAdapter();
+    const queue = new RabbitMQAdapter();
+    await queue.connect();
 
-const requestRide = new RequestRide(rideRepository, accountGateway);
-const getRide = new GetRide(rideRepository, accountGateway);
-const registry = Registry.getInstance();
-registry.register("requestRide", requestRide);
-registry.register("getRide", getRide);
+    const rideRepository = new RideRepositoryDatabase(connection);
+    const mailerGateway = new MailerGatway();
+    const accountGateway = new AccountGatewayHttp(new AxiosAdapter());
 
-new MainController(httpServer);
+    const requestRide = new RequestRide(rideRepository, accountGateway);
 
-httpServer.listen(3000);
+    const processPayment = new ProcessPayment(rideRepository);
+    const updateRideProjectionHandler = new UpdateRideProjectionHandler(connection);
+    const mediator = new Mediator();
+    mediator.register('rideCompleted', async (input: any) => {
+        await processPayment.execute(input.rideId);
+    })
+    const finishRide = new FinishRide(rideRepository, mediator, queue);
+
+    const getRide = new GetRide(rideRepository, accountGateway);
+    const registry = Registry.getInstance();
+    registry.register("requestRide", requestRide);
+    registry.register("getRide", getRide);
+    //registry.register('finishRide', finishRide);
+
+    new MainController(httpServer);
+    new QueueController(queue, processPayment, updateRideProjectionHandler);
+
+    httpServer.listen(3000);
+}
+
+main();

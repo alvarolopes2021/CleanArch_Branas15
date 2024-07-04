@@ -4,6 +4,6 @@ export default interface MailerGatway {
 
 export default class MailerGateway {
     async send(subject: string, recipient: string, message: string) {
-        //console.log(subject, recipient, message );
+        console.log(subject, recipient, message );
     }
 }

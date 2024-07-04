@@ -1,21 +1,24 @@
+import LogDecorator from "../../src/application/decorator/LogDecorator";
+import SecurityDecorator from "../../src/application/decorator/SecurityDecorator";
 import AccountGateway from "../../src/application/gateway/AccountGateway";
 import GetRide from "../../src/application/usecase/GetRide";
 import RequestRide from "../../src/application/usecase/RequestRide";
+import UseCase from "../../src/application/usecase/UseCase";
 import DatabaseConnection, { PgPromiseAdapter } from "../../src/infra/database/DatabaseConnection";
 import AccountGatewayHttp from "../../src/infra/gateway/AccountGatewayHttp";
 import { AxiosAdapter } from "../../src/infra/http/HttpClient";
 import { RideRepositoryDatabase } from "../../src/infra/repository/RideRepository";
 
 let connection: DatabaseConnection;
-let requestRide: RequestRide;
+let requestRide: UseCase;
 let getRide: GetRide;
-let accountGateway:  AccountGateway;
+let accountGateway: AccountGateway;
 
 beforeEach(() => {
     connection = new PgPromiseAdapter();
     const rideRepository = new RideRepositoryDatabase(connection);
     accountGateway = new AccountGatewayHttp(new AxiosAdapter());
-    requestRide = new RequestRide(rideRepository, accountGateway);
+    requestRide = new SecurityDecorator(new LogDecorator(new RequestRide(rideRepository, accountGateway)));
     getRide = new GetRide(rideRepository, accountGateway);
 })
 
